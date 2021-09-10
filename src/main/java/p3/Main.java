@@ -1,8 +1,6 @@
 package p3;
 
-import p3.dao.AdresDAOPsql;
-import p3.dao.DBConnection;
-import p3.dao.ReizigerDAOPsql;
+import p3.dao.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,8 +10,8 @@ public class Main {
         {
             try {
                 Connection conn = DBConnection.getInstance();
-                ReizigerDAOPsql rdao = new ReizigerDAOPsql(conn);
-                AdresDAOPsql adao = new AdresDAOPsql(conn);
+                ReizigerDAO rdao = new ReizigerDAOPsql(conn);
+                AdresDAO adao = new AdresDAOPsql(conn);
                 Test test = new Test(rdao, adao);
                 test.testReizigerDAO();
                 test.testAdresDAO ();

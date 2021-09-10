@@ -97,7 +97,7 @@ public class Reiziger {
     public void setAdres(Adres adres) {
         if (adres != null) {
             this.adres = adres;
-            this.adres.setReiziger_id(this.id);
+            this.adres.setReiziger(this);
         }
     }
 }

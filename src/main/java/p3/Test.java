@@ -97,11 +97,11 @@ private AdresDAO adao;
         System.out.println("[Test] AdresDAO.findbyID() geeft dit adres: " + huis);
         System.out.println();
 
-        huis.setHuisnummer("huisnummer");
+        huis.setHuisnummer("42B");
         adao.save(huis);
         System.out.println("[Test] AdresDAO.findbyID() geeft dit adres na update: " + adao.findById(huis.getId()));
         System.out.print("Dit is ");
-        if (adao.findById(huis.getId()) == huis) {
+        if (adao.findById(huis.getId()).toString().equals(huis.toString())) {
             System.out.println("correct.");
         } else {
             System.out.println("onjuist.");

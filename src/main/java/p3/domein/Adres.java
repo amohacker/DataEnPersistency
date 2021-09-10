@@ -6,19 +6,19 @@ public class Adres {
     private String huisnummer;
     private String straat;
     private String woonplaats;
-    private int reiziger_id;
+    private Reiziger reiziger;
 
-    public Adres(int id, String postcode, String huisnummer, String straat, String woonplaats, int reiziger_id) {
+    public Adres(int id, String postcode, String huisnummer, String straat, String woonplaats, Reiziger reiziger) {
         this.id = id;
         this.postcode = postcode;
         this.huisnummer = huisnummer;
         this.straat = straat;
         this.woonplaats = woonplaats;
-        this.reiziger_id = reiziger_id;
+        this.reiziger = reiziger;
     }
 
     public Adres(int id, String postcode, String huisnummer, String straat, String woonplaats) {
-        this(id, postcode, huisnummer, straat, woonplaats, 0);
+        this(id, postcode, huisnummer, straat, woonplaats, null);
     }
 
 
@@ -62,12 +62,12 @@ public class Adres {
         this.woonplaats = woonplaats;
     }
 
-    public int getReiziger_id() {
-        return reiziger_id;
+    public Reiziger getReiziger() {
+        return this.reiziger;
     }
 
-    public void setReiziger_id(int reiziger_id) {
-        this.reiziger_id = reiziger_id;
+    public void setReiziger(Reiziger reiziger) {
+        this.reiziger = reiziger;
     }
 
     @Override
@@ -77,8 +77,6 @@ public class Adres {
                 ", postcode='" + postcode + '\'' +
                 ", huisnummer='" + huisnummer + '\'' +
                 ", straat='" + straat + '\'' +
-                ", woonplaats='" + woonplaats + '\'' +
-                ", reiziger_id='" + reiziger_id + '\'' +
-                '}';
+                ", woonplaats='" + woonplaats + '\'' + '}';
     }
 }

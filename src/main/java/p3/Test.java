@@ -92,9 +92,22 @@ private AdresDAO adao;
 
         // Voeg aanvullende tests van de ontbrekende CRUD-operaties in.
 
+        Adres huis2 = adao.findById(huis.getId());
 
-        System.out.println("[Test] AdresDAO.findbyID() geeft deze reiziger: " + adao.findById(huis.getId()));
+        System.out.println("[Test] AdresDAO.findbyID() geeft dit adres: " + huis);
         System.out.println();
+
+        huis.setHuisnummer("huisnummer");
+        adao.save(huis);
+        System.out.println("[Test] AdresDAO.findbyID() geeft dit adres na update: " + adao.findById(huis.getId()));
+        System.out.print("Dit is ");
+        if (adao.findById(huis.getId()) == huis) {
+            System.out.println("correct.");
+        } else {
+            System.out.println("onjuist.");
+        }
+        System.out.println();
+
 
         System.out.println("[Test] AdresDAO.findbyReiziger() geeft deze reiziger: " + adao.findByReiziger(ben));
         System.out.println();

@@ -1,7 +1,8 @@
-package p3.dao;
+package p4.postgres;
 
-import p3.dao.ReizigerDAO;
-import p3.domein.Reiziger;
+import p4.dao.ReizigerDAO;
+import p4.domein.Reiziger;
+import p4.postgres.AdresDAOPsql;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,6 +17,9 @@ public class ReizigerDAOPsql implements ReizigerDAO {
 
     @Override
     public boolean save(Reiziger reiziger) {
+        if (reiziger.getId() == 0) {
+            throw new NullPointerException();
+        }
         try {
             PreparedStatement ps = conn.prepareStatement("INSERT INTO reiziger " +
                     "(reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum) " +
@@ -38,9 +42,12 @@ public class ReizigerDAOPsql implements ReizigerDAO {
 
     @Override
     public boolean update(Reiziger reiziger) {
+        if (reiziger.getId() == 0) {
+            throw new NullPointerException();
+        }
         try {
             PreparedStatement ps = conn.prepareStatement("UPDATE reiziger " +
-                    "SET voorletters=?, tussenvoegsel=?, achternaam=?, geboortedatum=?\n " +
+                    "SET voorletters=?, tussenvoegsel=?, achternaam=?, geboortedatum=? " +
                     "WHERE reiziger_id=?; ");
             ps.setString(1, reiziger.getVoorletters());
             ps.setString(2, reiziger.getTussenvoegsel());

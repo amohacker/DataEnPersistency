@@ -1,14 +1,14 @@
-package p3.dao;
+package p4.postgres;
 
-import p2.ReizigerDAO;
-import p3.domein.Adres;
-import p3.domein.Reiziger;
+import p4.dao.AdresDAO;
+import p4.domein.Adres;
+import p4.domein.Reiziger;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdresDAOPsql implements AdresDAO{
+public class AdresDAOPsql implements AdresDAO {
     Connection conn;
     public AdresDAOPsql(Connection connection){
         this.conn = connection;

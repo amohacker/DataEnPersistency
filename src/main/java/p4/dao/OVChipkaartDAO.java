@@ -13,5 +13,6 @@ public interface OVChipkaartDAO {
                                         // delete where reiziger_id = reizigerid and not kaart_nummer in (kaartnummer, andere kaartnummers)
     boolean update(OVChipkaart ovChipkaart);
     boolean delete(OVChipkaart ovChipkaart);
+    OVChipkaart findByID(int id);
     List<OVChipkaart> findAll() throws SQLException;
 }

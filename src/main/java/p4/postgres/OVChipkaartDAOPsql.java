@@ -6,6 +6,7 @@ import p4.domein.Reiziger;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class OVChipkaartDAOPsql implements OVChipkaartDAO {
@@ -58,17 +59,27 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     @Override
     public boolean update(Reiziger reiziger) {
         try {
+            if (reiziger.getOvChipkaartList().isEmpty())
+                return false;
             List<Integer> list = new ArrayList<>();
-            for (OVChipkaart ovChipkaart : reiziger.getOvChipkaartList()){
-                list.add (ovChipkaart.getKaartNummer());
+            StringBuilder sb = new StringBuilder();
+            Iterator iterator = reiziger.getOvChipkaartList().listIterator();
+            while (iterator.hasNext()){
+                sb.append(((OVChipkaart) iterator.next()).getKaartNummer());
+                if (iterator.hasNext())
+                    sb.append(", ");
             }
-            PreparedStatement ps = conn.prepareStatement("DELETE FROM ov_chipkaart WHERE reiziger_id = ? AND not kaart_nummer IN ?");
-            ps.setArray(1, conn.createArrayOf("int", list.toArray()));
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM ov_chipkaart WHERE reiziger_id = ? AND not kaart_nummer IN (" + sb + ");");
+            ps.setInt(1, reiziger.getId());
+
+            ps.executeUpdate();
+
+            reiziger.getOvChipkaartList().forEach((ovchipkaart) -> save(ovchipkaart));
+            return true;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            return false;
         }
-
-        return false;
     }
 
     @Override
@@ -100,6 +111,26 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
             return true;
         } catch (SQLException e) {
             return false;
+        }
+    }
+
+    @Override
+    public OVChipkaart findByID(int id) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("SELECT kaart_nummer, geldig_tot, klasse, saldo, reiziger_id FROM ov_chipkaart " +
+                    "WHERE kaart_nummer = ?");
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+        return new OVChipkaart(
+                rs.getInt("kaart_nummer"),
+                rs.getDate("geldig_tot"),
+                rs.getInt("klasse"),
+                rs.getFloat("saldo"),
+                new ReizigerDAOPsql(conn).findById(rs.getInt("reiziger_id"))
+        );
+        } catch (SQLException e) {
+            return null;
         }
     }
 

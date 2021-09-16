@@ -7,6 +7,8 @@ import p4.domein.Adres;
 import p4.domein.OVChipkaart;
 import p4.domein.Reiziger;
 
+import java.awt.*;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -91,7 +93,6 @@ private OVChipkaartDAO odao;
 
         adressen = adao.findAll();
         System.out.println(adressen.size() + " adressen\n");
-
         // Voeg aanvullende tests van de ontbrekende CRUD-operaties in.
 
         Adres huis2 = adao.findById(huis.getId());
@@ -100,6 +101,7 @@ private OVChipkaartDAO odao;
         System.out.println();
 
         huis.setHuisnummer("42B");
+
         adao.save(huis);
         System.out.println("[Test] AdresDAO.findbyID() geeft dit adres na update: " + adao.findById(huis.getId()));
         System.out.print("Dit is ");
@@ -125,13 +127,46 @@ private OVChipkaartDAO odao;
     public void testOVChipkaartDAO() throws SQLException{
         System.out.println("\n---------- Test OVChipkaartDAO -------------");
 
-        List<OVChipkaart> list = odao.findAll();
+        List<OVChipkaart> ovchipkaarten = odao.findAll();
         System.out.println("[Test] OVChipkaartDAO.findAll() geeft de volgende ovchipkaarten:");
-        for (OVChipkaart ov : list) {
+        for (OVChipkaart ov : ovchipkaarten) {
             System.out.println(ov);
         }
         System.out.println();
 
+        String gbdatum = "1984-01-25";
+        Reiziger ben = new Reiziger(83, "B", "", "Paprika", java.sql.Date.valueOf(gbdatum));
+        String geldigtot1 = "2022-07-25";
+        String geldigtot2 = "2025-01-12";
+        OVChipkaart bensov1 = new OVChipkaart(69123, Date.valueOf(geldigtot1), 1, 200);
+        OVChipkaart bensov2 = new OVChipkaart(69124, Date.valueOf(geldigtot2), 1, 200);
+        ben.addOvChipkaart(bensov1);
+        ben.addOvChipkaart(bensov2);
 
+        if (!rdao.save(ben))
+            System.out.println("ReizigerDAO.save() failed");
+        System.out.print("[Test] Eerst " + ovchipkaarten.size() + " ov's, na OVChipkaartDAO.save() ");
+        ovchipkaarten = odao.findAll();
+        System.out.println(ovchipkaarten.size() + " ov's.");
+
+        OVChipkaart ov = odao.findByID(bensov1.getKaartNummer());
+
+        System.out.println("[Test] OVchipDAO.findbyID() geeft dit adres: " + ov);
+        System.out.println();
+
+        System.out.println("[Test] reiziger Ben heeft voor de update: " + ben.getOvChipkaartList());
+        bensov1.setSaldo(8000);
+        ben.removeOvChipkaart(bensov2);
+        System.out.println("Dit word geupdate naar: " + ben.getOvChipkaartList());
+        rdao.save(ben);
+        System.out.println("ReizigerDAO.getbyReiziger() geeft na de update: " + odao.findByReiziger(ben));
+        System.out.println();
+
+        ovchipkaarten = odao.findAll();
+
+        System.out.print("[Test] Eerst " + ovchipkaarten.size() + " ovchipkaarten, na OVchipkaartDAO.delete() ");
+        rdao.delete(ben);
+        ovchipkaarten = odao.findAll();
+        System.out.println(ovchipkaarten.size() + " ovchipkaarten\n");
     }
 }

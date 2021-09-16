@@ -1,6 +1,8 @@
 package p4.postgres;
 
+import p4.dao.AdresDAO;
 import p4.dao.ReizigerDAO;
+import p4.domein.OVChipkaart;
 import p4.domein.Reiziger;
 import p4.postgres.AdresDAOPsql;
 
@@ -29,14 +31,16 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             ps.setString(3, reiziger.getTussenvoegsel());
             ps.setString(4, reiziger.getAchternaam());
             ps.setDate(5, new Date(reiziger.getGeboortedatum().getTime()));
-            if (reiziger.getAdres() != null)
-                new AdresDAOPsql(conn).save(reiziger.getAdres());
             if (ps.executeUpdate() == 0) {
-                return false;
+                return update(reiziger);
             }
-            return true;
+            if (reiziger.getAdres() != null) {
+                new AdresDAOPsql(conn).save(reiziger.getAdres());
+            }
+            return update(reiziger);
+
         } catch (SQLException e){
-            return false;
+            return update(reiziger);
         }
     }
 
@@ -54,8 +58,14 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             ps.setString(3, reiziger.getAchternaam());
             ps.setDate(4, new Date(reiziger.getGeboortedatum().getTime()));
             ps.setInt(5, reiziger.getId());
-            if (reiziger.getAdres() != null)
-                new AdresDAOPsql(conn).save(reiziger.getAdres());
+
+                AdresDAOPsql adao = new AdresDAOPsql(conn);
+                if (reiziger.getAdres() != null)
+                    adao.save(reiziger.getAdres());
+                else
+                    adao.delete(adao.findByReiziger(reiziger));
+
+            new OVChipkaartDAOPsql(conn).update(reiziger);
             if (ps.executeUpdate() == 0) {
                 return false;
             }
@@ -71,8 +81,12 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             PreparedStatement ps = conn.prepareStatement("DELETE FROM reiziger " +
                     "WHERE reiziger_id=?;");
             ps.setInt(1, reiziger.getId());
-            if (reiziger.getAdres() != null)
+            for (OVChipkaart ov : reiziger.getOvChipkaartList()) {
+                new OVChipkaartDAOPsql(conn).delete(ov);
+            }
+            if (reiziger.getAdres() != null) {
                 new AdresDAOPsql(conn).delete(reiziger.getAdres());
+            }
             if (ps.executeUpdate() == 0) {
                 return false;
             }
@@ -100,6 +114,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                     rs.getDate("geboortedatum")
             );
             reiziger.setAdres(new AdresDAOPsql(conn).findByReiziger(reiziger));
+            reiziger.setOvChipkaartList(new OVChipkaartDAOPsql(conn).findByReiziger(reiziger));
             return reiziger;
         } catch (SQLException e) {
             return null;

@@ -37,9 +37,9 @@ public class AdresDAOPsql implements AdresDAO {
     @Override
     public boolean update(Adres adres) {
         try {
-            PreparedStatement ps = conn.prepareStatement("UPDATEUPDATE adres " +
-                    "SET postcode=?, huisnummer=?, straat=?, woonplaats=?, reiziger_id=2 " +  //foute versieSS
-                    "WHERE adres_id=2;");
+            PreparedStatement ps = conn.prepareStatement("UPDATE adres " +
+                    "SET postcode=?, huisnummer=?, straat=?, woonplaats=?, reiziger_id=? " +
+                    "WHERE adres_id=?;");
             ps.setString(1, adres.getPostcode());
             ps.setString(2, adres.getHuisnummer());
             ps.setString(3, adres.getStraat());
@@ -51,13 +51,14 @@ public class AdresDAOPsql implements AdresDAO {
             }
             return true;
         } catch (SQLException e){
-            System.out.println(e);
             return false;
         }
     }
 
     @Override
     public boolean delete(Adres adres) {
+        if (adres == null)
+            return false;
         try {
             PreparedStatement ps = conn.prepareStatement("DELETE FROM adres " +
                     "WHERE adres_id=?;");

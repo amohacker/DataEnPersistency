@@ -110,6 +110,17 @@ public class Reiziger {
         this.ovChipkaartList.add(ovChipkaart);
     }
 
+    public void removeOvChipkaart(OVChipkaart ovChipkaart){
+        this.ovChipkaartList.remove(ovChipkaart);
+    }
+
+    public void removeOvChipkaartByKaartNummer(int id){
+        for (OVChipkaart ov : this.ovChipkaartList) {
+            if (ov.getKaartNummer() == id)
+                this.ovChipkaartList.remove(ov);
+        }
+    }
+
     @Override
     public String toString() {
         return "Reiziger {" +
@@ -118,8 +129,8 @@ public class Reiziger {
                 " " + tussenvoegsel + " " +
                 " " + achternaam +
                 ", geb. " + geboortedatum +
-                ", " + adres + ",\n " +
-                ovChipkaartList + " + }";
+                ", " + adres + ", \n" +
+                ovChipkaartList + "}";
     }
 
 }

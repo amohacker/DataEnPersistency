@@ -63,7 +63,7 @@ WHERE m.afd = a.anr;
 DROP VIEW IF EXISTS s3_5; CREATE OR REPLACE VIEW s3_5 AS                                                     -- [TEST]
 SELECT m.naam
 FROM medewerkers m, inschrijvingen i
-WHERE m.mnr = i.cursist AND i.begindatum = '12-04-2019' AND i.cursus = 'S02';
+WHERE m.mnr = i.cursist AND i.begindatum = TO_DATE('12-04-2019', 'DD-MM-YYYY') AND i.cursus = 'S02';
 
 -- S3.6.
 -- Geef de namen van alle medewerkers en hun toelage.

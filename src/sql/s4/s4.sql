@@ -48,7 +48,7 @@ DROP VIEW IF EXISTS s4_3; CREATE OR REPLACE VIEW s4_3 AS                        
 select cursus, begindatum, count(*) as aantal_inschrijvingen
 from inschrijvingen i
 group by i.cursus, i.begindatum
-having count(*) >= 3 AND date_part('year' , i.begindatum) = '2019'
+having count(*) >= 3 AND date_part('year' , i.begindatum) = '2019';
 
 -- S4.4.
 -- Welke medewerkers hebben een bepaalde cursus meer dan één keer gevolgd?
@@ -71,7 +71,7 @@ having count(*) > 1;
 DROP VIEW IF EXISTS s4_5; CREATE OR REPLACE VIEW s4_5 AS                                                     -- [TEST]
 select cursus, count(*) as aantal
 from uitvoeringen
-group by cursus
+group by cursus;
 
 -- S4.6.
 -- Bepaal hoeveel jaar leeftijdsverschil er zit tussen de oudste en de
@@ -80,7 +80,7 @@ group by cursus
 -- Je mag hierbij aannemen dat elk jaar 365 dagen heeft.
 DROP VIEW IF EXISTS s4_6; CREATE OR REPLACE VIEW s4_6 AS                                                     -- [TEST]
 select avg(age(gbdatum)) as gemiddeld, max(age(gbdatum)) - min(age(gbdatum))
-from medewerkers m
+from medewerkers m;
 
 -- S4.7.
 -- Geef van het hele bedrijf een overzicht van het aantal medewerkers dat
@@ -89,7 +89,7 @@ from medewerkers m
 -- per verkoper is (`commissie_verkopers`).
 DROP VIEW IF EXISTS s4_7; CREATE OR REPLACE VIEW s4_7 AS                                                     -- [TEST]
 select count(*) as aantal_medewerkers, avg(coalesce (comm, 0)) as commissie_medewerkers, avg(comm) as commissie_verkopers
-from medewerkers m
+from medewerkers m;
 
 
 -- -------------------------[ HU TESTRAAMWERK ]--------------------------------

@@ -110,6 +110,10 @@ public class Reiziger {
         this.ovChipkaartList.add(ovChipkaart);
     }
 
+    public void addOvChipkaart(Date geldigTot, int klasse, float saldo){
+        addOvChipkaart(new OVChipkaart(geldigTot, klasse, saldo, this));
+    }
+
     public void removeOvChipkaart(OVChipkaart ovChipkaart){
         this.ovChipkaartList.remove(ovChipkaart);
     }

@@ -177,13 +177,12 @@ private OVChipkaartDAO odao;
         System.out.println("Reiziger: " + reiziger1);
         System.out.println("Aantal: " + reiziger1.getOvChipkaartList().size());
 
-        OVChipkaart ov1 = reiziger.getOvChipkaartList().get(1);
-        reiziger1.removeOvChipkaart(ov1);
+        reiziger1.removeOvChipkaart(reiziger1.getOvChipkaartList().get(1));
 
         rdao.save(reiziger1);
 
         // GRASP general assignment of responsibility pattern
-        System.out.printf("Reiziger: " + reiziger1);
+        System.out.println("Reiziger: " + reiziger1);
         System.out.println("Aantal: " + reiziger1.getOvChipkaartList().size());
 
 

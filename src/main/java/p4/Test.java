@@ -10,6 +10,7 @@ import p4.domein.Reiziger;
 import java.awt.*;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Test {
@@ -138,10 +139,8 @@ private OVChipkaartDAO odao;
         Reiziger ben = new Reiziger(83, "B", "", "Paprika", java.sql.Date.valueOf(gbdatum));
         String geldigtot1 = "2022-07-25";
         String geldigtot2 = "2025-01-12";
-        OVChipkaart bensov1 = new OVChipkaart(69123, Date.valueOf(geldigtot1), 1, 200);
-        OVChipkaart bensov2 = new OVChipkaart(69124, Date.valueOf(geldigtot2), 1, 200);
-        ben.addOvChipkaart(bensov1);
-        ben.addOvChipkaart(bensov2);
+        ben.addOvChipkaart(Date.valueOf(geldigtot1), 1, 200);
+        ben.addOvChipkaart(Date.valueOf(geldigtot2), 1, 200);
 
         if (!rdao.save(ben))
             System.out.println("ReizigerDAO.save() failed");
@@ -149,14 +148,14 @@ private OVChipkaartDAO odao;
         ovchipkaarten = odao.findAll();
         System.out.println(ovchipkaarten.size() + " ov's.");
 
-        OVChipkaart ov = odao.findByID(bensov1.getKaartNummer());
+        OVChipkaart ov = odao.findByID(ben.getOvChipkaartList().get(0).getKaartNummer());
 
         System.out.println("[Test] OVchipDAO.findbyID() geeft dit adres: " + ov);
         System.out.println();
 
         System.out.println("[Test] reiziger Ben heeft voor de update: " + ben.getOvChipkaartList());
-        bensov1.setSaldo(8000);
-        ben.removeOvChipkaart(bensov2);
+        ben.getOvChipkaartList().get(0).setSaldo(8000);
+        ben.removeOvChipkaart(ben.getOvChipkaartList().get(1));
         System.out.println("Dit word geupdate naar: " + ben.getOvChipkaartList());
         rdao.save(ben);
         System.out.println("ReizigerDAO.getbyReiziger() geeft na de update: " + odao.findByReiziger(ben));
@@ -168,5 +167,26 @@ private OVChipkaartDAO odao;
         rdao.delete(ben);
         ovchipkaarten = odao.findAll();
         System.out.println(ovchipkaarten.size() + " ovchipkaarten\n");
+
+        String datum = "1981-03-14";
+        Reiziger reiziger = new Reiziger(88279, "R", "Ossewaarde", java.sql.Date.valueOf(datum));
+        reiziger.addOvChipkaart(java.sql.Date.valueOf("2030-01-02"), 1, 20f);
+        reiziger.addOvChipkaart(java.sql.Date.valueOf("2031-01-03"), 1, 30f);
+        rdao.save(reiziger);
+        Reiziger reiziger1 = rdao.findById(reiziger.getId());
+        System.out.println("Reiziger: " + reiziger1);
+        System.out.println("Aantal: " + reiziger1.getOvChipkaartList().size());
+
+        OVChipkaart ov1 = reiziger.getOvChipkaartList().get(1);
+        reiziger1.removeOvChipkaart(ov1);
+
+        rdao.save(reiziger1);
+
+        // GRASP general assignment of responsibility pattern
+        System.out.printf("Reiziger: " + reiziger1);
+        System.out.println("Aantal: " + reiziger1.getOvChipkaartList().size());
+
+
+        rdao.delete(reiziger1);
     }
 }

@@ -39,17 +39,29 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     }
 
     @Override
-    public boolean save(OVChipkaart ovChipkaart) {
+    public int save(OVChipkaart ovChipkaart) throws SQLException {
         try {
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO ov_chipkaart (kaart_nummer, geldig_tot, klasse, saldo, reiziger_id) VALUES(?, ?, ?, ?, ?);");
-            ps.setInt(1, ovChipkaart.getKaartNummer());
-            ps.setDate(2, new Date(ovChipkaart.getGeldigTot().getTime()));
-            ps.setInt(3, ovChipkaart.getKlasse());
-            ps.setFloat(4, ovChipkaart.getSaldo());
-            ps.setInt(5, ovChipkaart.getReiziger().getId());
-            if (ps.executeUpdate() == 0)
-                return update(ovChipkaart);
-            return true;
+            String kaart_nummer_statement;
+            if (ovChipkaart.getKaartNummer() == 0) {
+                kaart_nummer_statement = "(SELECT max(kaart_nummer)+1 FROM ov_chipkaart)";
+            } else {
+                kaart_nummer_statement = "?";
+            }
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO ov_chipkaart (geldig_tot, klasse, saldo, reiziger_id, kaart_nummer) " +
+                    "VALUES(?, ?, ?, ?, " + kaart_nummer_statement + ") " +
+                    "RETURNING kaart_nummer;");
+            ps.setDate(1, new Date(ovChipkaart.getGeldigTot().getTime()));
+            ps.setInt(2, ovChipkaart.getKlasse());
+            ps.setFloat(3, ovChipkaart.getSaldo());
+            ps.setInt(4, ovChipkaart.getReiziger().getId());
+            try {
+                ps.setInt(5, ovChipkaart.getKaartNummer());
+            } catch (SQLException e){}
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            System.out.println(rs.getRow());
+            ps.executeQuery();
+            return rs.getInt("kaart_nummer");
 
         } catch (SQLException throwables) {
             return update(ovChipkaart);
@@ -61,7 +73,6 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
         try {
             if (reiziger.getOvChipkaartList().isEmpty())
                 return false;
-            List<Integer> list = new ArrayList<>();
             StringBuilder sb = new StringBuilder();
             Iterator iterator = reiziger.getOvChipkaartList().listIterator();
             while (iterator.hasNext()){
@@ -74,7 +85,13 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
 
             ps.executeUpdate();
 
-            reiziger.getOvChipkaartList().forEach((ovchipkaart) -> save(ovchipkaart));
+            reiziger.getOvChipkaartList().forEach((ovchipkaart) -> {
+                try {
+                    ovchipkaart.setKaartNummer(save(ovchipkaart));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
             return true;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -83,21 +100,14 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     }
 
     @Override
-    public boolean update(OVChipkaart ovChipkaart) {
-        try {
-            PreparedStatement ps = conn.prepareStatement("UPDATE ov_chipkaart SET geldig_tot=?, klasse=?, saldo=?, reiziger_id=? WHERE kaart_nummer=?;");
-            ps.setDate(1, new Date(ovChipkaart.getGeldigTot().getTime()));
-            ps.setInt(2, ovChipkaart.getKlasse());
-            ps.setFloat(3, ovChipkaart.getSaldo());
-            ps.setInt(4, ovChipkaart.getReiziger().getId());
-            ps.setInt(5, ovChipkaart.getKaartNummer());
-            if (ps.executeUpdate() == 0)
-                return false;
-            return true;
-
-        } catch (SQLException throwables) {
-            return false;
-        }
+    public int update(OVChipkaart ovChipkaart) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("UPDATE ov_chipkaart SET geldig_tot=?, klasse=?, saldo=?, reiziger_id=? WHERE kaart_nummer=?;");
+        ps.setDate(1, new Date(ovChipkaart.getGeldigTot().getTime()));
+        ps.setInt(2, ovChipkaart.getKlasse());
+        ps.setFloat(3, ovChipkaart.getSaldo());
+        ps.setInt(4, ovChipkaart.getReiziger().getId());
+        ps.setInt(5, ovChipkaart.getKaartNummer());
+        return ovChipkaart.getKaartNummer();
     }
 
     @Override
